@@ -1,0 +1,18 @@
+[
+  {
+      "name": "demo_pattern",
+      "code": "console.log('hello world')"
+  },
+  {
+      "name": "demo_fun",
+      "code": "x = 3"
+  },
+  {
+      "name": "demo_cast",
+      "code": "6"
+  },
+  {
+    "name": "demo_four",
+    "code": "6"
+}
+]
