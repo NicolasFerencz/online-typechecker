@@ -1,7 +1,7 @@
 import styles from './index.module.css'
 import exampleScripts from '../../example-scripts.json'
 
-export default function Document({ propCodeHeight, addExample }) {
+export default function Document({ propCodeHeight, addTab }) {
 
   return (
     <div className={styles['wrapper']} style={{height:`${propCodeHeight}px`}}>
@@ -12,7 +12,7 @@ export default function Document({ propCodeHeight, addExample }) {
           <ul>
             {exampleScripts.map((s, i) => {
               return (
-                <li onClick={() => addExample(s.name)} key={i}>{s.name}</li>
+                <li onClick={() => addTab(s.name)} key={i}>{s.name}</li>
               );
             })}
           </ul>

@@ -1,18 +1,22 @@
 [
   {
-      "name": "demo_pattern",
-      "code": "console.log('hello world')"
+    "name": "demo_pattern",
+    "code": "console.log('hello world')",
+    "showing": true
   },
   {
-      "name": "demo_fun",
-      "code": "x = 3"
+    "name": "demo_fun",
+    "code": "x = 3",
+    "showing": true
   },
   {
-      "name": "demo_cast",
-      "code": "6"
+    "name": "demo_cast",
+    "code": "6",
+    "showing": false
   },
   {
-    "name": "demo_four",
-    "code": "6"
-}
+    "name": "demo_dami",
+    "code": "6",
+    "showing": true
+  }
 ]

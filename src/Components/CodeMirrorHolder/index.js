@@ -1,8 +1,9 @@
 import CodeMirror from '../CodeMirror';
 import { useState, useCallback, useEffect } from 'react';
 import styles from './index.module.css'
-import scripts from '../../initial-scripts.json'
+import initialScripts from '../../initial-scripts.json'
 import Document from '../Document';
+import exampleScripts from '../../example-scripts.json';
 
 const minDrawerWidth = 50;
 const maxDrawerWidth = 1000;
@@ -10,8 +11,11 @@ const minDrawerHeight = 50;
 const maxDrawerHeight = 1000;
 
 export default function Holder() {
+  const [id, setId] = useState(1)
   const [width, setWidth] = useState(window.innerWidth/2)
   const [height, setHeight] = useState(window.innerHeight/2)
+  const [scripts, setScripts] = useState(exampleScripts)
+  const [selected, setSelected] = useState(0)
 
   const handleResize = () => {
     setWidth(window.innerWidth/2)
@@ -55,15 +59,68 @@ export default function Holder() {
     }
   }, []);
 
+  const deleteTab = (name) => {
+    if(scripts.filter(s => s.showing).length === 1) return 
+    setScripts(scripts.map((s, i) => { 
+      if (s.name !== name) return s
+      return { ...s, showing: false };
+    }))
+    console.log(scripts[selected].showing)
+    setSelected(scripts.findIndex(s => s.showing))
+  }
+
+  const addTab = (name) => {
+    setScripts(scripts.map((s, i) => {
+      if (s.name !== name) return s;
+      setSelected(i)
+      return { ...s, showing: true };
+    }))
+  }
+
+  const selectTab = (name) => {
+    setSelected(scripts.findIndex(s => s.name === name))
+  }
+
+  const addScript = () => {
+    setScripts([...scripts, { name: `Script ${id}`, code: '', showing: true, deletable: false }])
+    setId(id + 1)
+  }
+
+  const onCodeChange = (newCode) => {
+    scripts[selected].code = newCode;
+  }
+
   return (
     <div>
+      <div className={styles['tabs-bar']} />
       <div style={{display: 'flex'}}>
-      <CodeMirror scripts={scripts} propCodeWidth={width} propCodeHeight={height} />
+        <div className={styles['tabs-wrapper']}>
+          <div className={styles['tabs-container']} style={{width: `${window.innerWidth - 30}px`}}>
+            {scripts.filter(s => s.showing).map((t,i) => {
+                return (
+                    <div 
+                    key={i} 
+                    className={styles['tab']}
+                    style={{background: scripts[selected].name !== t.name ? '#225866' : '#282c34'}}
+                    >
+                        <div onClick={() => selectTab(t.name)} className={styles['tab-name']}>{t.name}</div>
+                        <div onClick={() => deleteTab(t.name)} >x</div>
+                    </div>
+                )        
+            })}
+          </div>
+          <div className={styles['add-tab']} onClick={() => addScript()}> 
+            +
+          </div>
+        </div>
+      </div>
+      <div style={{display: 'flex'}}>
+        <CodeMirror onCodeChange={(newCode) => onCodeChange(newCode)} code={scripts[selected].code} propCodeWidth={width} propCodeHeight={height} />
         <div onMouseDown={e => handleMouseDownW(e)} className={styles['width-dragger']} />
-        <CodeMirror scripts={scripts} propCodeWidth={window.innerWidth - width} propCodeHeight={height} />
+        <CodeMirror propCodeWidth={window.innerWidth - width} propCodeHeight={height} />
       </div>
       <div onMouseDown={e => handleMouseDownH(e)} className={styles['height-dragger']} />
-      <Document propCodeHeight={window.innerHeight - height} />
+      <Document addTab={(name) => addTab(name)} propCodeHeight={window.innerHeight - height} />
     </div>
   );
 }
