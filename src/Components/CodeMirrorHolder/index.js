@@ -1,6 +1,7 @@
 import CodeMirror from '../CodeMirror';
 import { useState, useCallback, useEffect } from 'react';
 import styles from './index.module.css'
+import scripts from '../../preloaded-scripts.json'
 
 const minDrawerWidth = 50;
 const maxDrawerWidth = 1000;
@@ -47,10 +48,8 @@ export default function Holder() {
   };
 
   const handleMouseMoveH = useCallback(e => {
-    console.log(e.clientY, document.body.offsetTop)
     const newHeight = e.clientY - document.body.offsetTop;
     if (newHeight > minDrawerHeight && newHeight < maxDrawerHeight) {
-      console.log(newHeight);
       setHeight(newHeight);
     }
   }, []);
@@ -58,9 +57,9 @@ export default function Holder() {
   return (
     <div>
       <div style={{display: 'flex'}}>
-        <CodeMirror propCodeWidth={width} propCodeHeight={height} />
+        <CodeMirror scripts={scripts} propCodeWidth={width} propCodeHeight={height} />
         <div onMouseDown={e => handleMouseDownW(e)} className={styles['width-dragger']} />
-        <CodeMirror propCodeWidth={window.innerWidth - width} propCodeHeight={height} />
+        <CodeMirror scripts={scripts} propCodeWidth={window.innerWidth - width} propCodeHeight={height} />
       </div>
       <div onMouseDown={e => handleMouseDownH(e)} className={styles['height-dragger']} />
     </div>

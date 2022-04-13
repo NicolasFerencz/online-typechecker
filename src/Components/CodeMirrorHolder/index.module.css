@@ -1,17 +1,16 @@
-
 .width-dragger {
-    width: 5px;
-    background: #002b36;
-    cursor: ew-resize;
-    padding: 4px 0 0;
-    borderTop: 1px solid #ddd;
+  width: 5px;
+  background: #002b36;
+  cursor: ew-resize;
+  padding: 4px 0 0;
+  borderTop: 1px solid #ddd;
 }
 
 .height-dragger {
-    height: 1px;
-    width: 100%;
-    background: #002b36;
-    cursor: ns-resize;
-    padding: 4px 0 0;
-    borderTop: 1px solid #ddd;
+  height: 1px;
+  width: 100%;
+  background: #002b36;
+  cursor: ns-resize;
+  padding: 4px 0 0;
+  borderTop: 1px solid #ddd;
 }

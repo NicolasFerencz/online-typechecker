@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Script 1",
+        "code": "console.log('hello world')"
+    },
+    {
+        "name": "Elixir example",
+        "code": "x = 3"
+    },
+    {
+        "name": "Dami",
+        "code": "6"
+    }
+]
