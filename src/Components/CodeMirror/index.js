@@ -22,7 +22,7 @@ const theme = EditorView.theme({
 
 const Options = ['Run', 'Annotate', 'Checktype', 'Log', 'Clear']
 
-export default function Code({ propCodeWidth, propCodeHeight, code = '', onCodeChange, evaluation }) {
+export default function Code({ propCodeWidth, propCodeHeight, code = '', onCodeChange, evaluation, withOptions = true }) {
   const [result, setResult] = useState('')
 
   return (
@@ -43,7 +43,7 @@ export default function Code({ propCodeWidth, propCodeHeight, code = '', onCodeC
           />
         </div>
         <div className={styles['commands']}>
-          {Options.map((o, i) => {
+          {withOptions && Options.map((o, i) => {
             return (
               <>
                 <span 

@@ -9,7 +9,9 @@
 
 .commands {
   margin: auto;
-  padding: 10px;
+  height: 38px;
+  align-items: center;
+  padding-left: 10px;
   background: #225866;
   color: white;
   gap: 10px;

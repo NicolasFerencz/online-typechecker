@@ -100,6 +100,7 @@ export default function Holder() {
   const EvaluateCode = (type) => {
     setScripts(scripts.map((s, i) => {
       if(i !== selected) return s;
+      if(type === 'Clear') return { ...s, secondCode: ''}
       return { ...s, secondCode: 'Executed ' + type + ' for ' + s.name}
     }))
   }
@@ -134,7 +135,7 @@ export default function Holder() {
           </div>
         </div>
       </div>
-      <div style={{display: 'flex', borderTop: '3px solid #002b36'}}>
+      <div style={{display: 'flex', borderTop: '5px solid #002b36'}}>
         <CodeMirror
           evaluation={(type) => EvaluateCode(type)}
           onCodeChange={(newCode) => onCodeChange(newCode)}
@@ -148,6 +149,7 @@ export default function Holder() {
           code={scripts[selected].secondCode || ''}
           propCodeWidth={window.innerWidth - width}
           propCodeHeight={height}
+          withOptions={false}
         />
       </div>
       <div onMouseDown={e => handleMouseDownH(e)} className={styles['height-dragger']} />
