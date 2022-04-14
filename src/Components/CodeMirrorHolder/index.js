@@ -1,7 +1,6 @@
 import CodeMirror from '../CodeMirror';
 import { useState, useCallback, useEffect } from 'react';
 import styles from './index.module.css'
-import initialScripts from '../../initial-scripts.json'
 import Document from '../Document';
 import exampleScripts from '../../example-scripts.json';
 
@@ -59,14 +58,14 @@ export default function Holder() {
     }
   }, []);
 
-  const deleteTab = (name) => {
+  const deleteTab = (name, index) => {
+    if (selected === index) setSelected(scripts.findIndex(s => s.showing))
     if(scripts.filter(s => s.showing).length === 1) return 
     setScripts(scripts.map((s, i) => { 
       if (s.name !== name) return s
       return { ...s, showing: false };
     }))
     console.log(scripts[selected].showing)
-    setSelected(scripts.findIndex(s => s.showing))
   }
 
   const addTab = (name) => {
@@ -96,7 +95,8 @@ export default function Holder() {
       <div style={{display: 'flex'}}>
         <div className={styles['tabs-wrapper']}>
           <div className={styles['tabs-container']} style={{width: `${window.innerWidth - 30}px`}}>
-            {scripts.filter(s => s.showing).map((t,i) => {
+            {scripts.map((t,i) => {
+                if(!t.showing) return '';
                 return (
                     <div 
                     key={i} 
@@ -104,7 +104,7 @@ export default function Holder() {
                     style={{background: scripts[selected].name !== t.name ? '#225866' : '#282c34'}}
                     >
                         <div onClick={() => selectTab(t.name)} className={styles['tab-name']}>{t.name}</div>
-                        <div onClick={() => deleteTab(t.name)} >x</div>
+                        <div onClick={() => deleteTab(t.name, i)} >x</div>
                     </div>
                 )        
             })}

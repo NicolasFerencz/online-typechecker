@@ -1,7 +1,7 @@
 [
   {
     "name": "demo_pattern",
-    "code": "console.log('hello world')",
+    "code": "#elixir",
     "showing": true
   },
   {
