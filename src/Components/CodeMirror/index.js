@@ -5,9 +5,24 @@ import styles from './index.module.css'
 import { oneDark } from "@codemirror/theme-one-dark";
 import { elixir } from 'codemirror-lang-elixir'
 import { basicSetup } from '@codemirror/basic-setup'
+import { EditorView } from '@codemirror/view';
 
+const theme = EditorView.theme({
+  "&.cm-editor": {
+    padding: "0  0 10px 0",
+    fontSize: "10px",
+    fontFamily: "Roboto Mono, sans-serif",
+    border: 'none!important'
+  },
+  ".cm-lineNumbers .cm-gutterElement": {
+    minWidth: "20px",
+    fontFamily: "Roboto Mono, sans-serif",
+  },
+});
 
-export default function Code({ propCodeWidth, propCodeHeight, code = '', onCodeChange }) {
+const Options = ['Run', 'Annotate', 'Checktype', 'Log', 'Clear']
+
+export default function Code({ propCodeWidth, propCodeHeight, code = '', onCodeChange, evaluation }) {
   const [result, setResult] = useState('')
 
   return (
@@ -16,28 +31,35 @@ export default function Code({ propCodeWidth, propCodeHeight, code = '', onCodeC
           <CodeMirror
             value={code}
             height={`${propCodeHeight - 90}px`}
-            width={`${propCodeWidth}px`}
-            extensions={[basicSetup, StreamLanguage.define(elixir)]}
-            mode={'elixir'}
+            width={`${propCodeWidth}px`}  
             onChange={(value, viewUpdate) => {
               if (viewUpdate.changes.sections.length === 2) return;
               onCodeChange(value)
             }}
-            options={{
-
-            }}
-            theme={oneDark}
+            minWidth={'350px'}
+            maxWidth={`${window.innerWidth - 350}px`}
+            theme={[oneDark, basicSetup, StreamLanguage.define(elixir)]}
+            extensions={theme}
           />
         </div>
-        <div 
-          onClick={() => setResult(eval(code))} 
-          className={styles['commands']}
-        >
-          <span>Run</span>
+        <div className={styles['commands']}>
+          {Options.map((o, i) => {
+            return (
+              <>
+                <span 
+                  onClick={() => evaluation(o)}
+                  style={{cursor:'pointer'}}
+                >
+                  {o}
+                </span>
+                {i !== Options.length - 1 && <span>|</span>}
+              </>
+            )
+          })}
         </div>
-        <div className={styles['output']}>
+        {/* <div className={styles['output']}>
           Your script says: {result}
-        </div>
+        </div> */}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import styles from './index.module.css'
-import exampleScripts from '../../example-scripts.json'
+import { scripts as exampleScripts } from '../../example-scripts'
 
 export default function Document({ propCodeHeight, addTab }) {
 

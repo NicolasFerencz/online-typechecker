@@ -2,7 +2,7 @@ import CodeMirror from '../CodeMirror';
 import { useState, useCallback, useEffect } from 'react';
 import styles from './index.module.css'
 import Document from '../Document';
-import exampleScripts from '../../example-scripts.json';
+import { scripts as exampleScripts }  from '../../example-scripts';
 
 const minDrawerWidth = 50;
 const maxDrawerWidth = 1000;
@@ -12,7 +12,7 @@ const maxDrawerHeight = 1000;
 export default function Holder() {
   const [id, setId] = useState(1)
   const [width, setWidth] = useState(window.innerWidth/2)
-  const [height, setHeight] = useState(window.innerHeight/2)
+  const [height, setHeight] = useState(450)
   const [scripts, setScripts] = useState(exampleScripts)
   const [selected, setSelected] = useState(0)
 
@@ -89,6 +89,21 @@ export default function Holder() {
     scripts[selected].code = newCode;
   }
 
+  const previousToSelectedTabOrLastTab = (name) => {
+    const onlyShowing = scripts.filter(s => s.showing)
+    if(onlyShowing[onlyShowing.length - 1].name === name) return true; // si es la ultima
+    const activeInShowingIndex = onlyShowing.findIndex(s => s.name === scripts[selected].name)
+    if(activeInShowingIndex === 0) return false;
+    return onlyShowing[activeInShowingIndex - 1].name === name;
+  }
+
+  const EvaluateCode = (type) => {
+    setScripts(scripts.map((s, i) => {
+      if(i !== selected) return s;
+      return { ...s, secondCode: 'Executed ' + type + ' for ' + s.name}
+    }))
+  }
+  
   return (
     <div>
       <div className={styles['tabs-bar']} />
@@ -98,14 +113,19 @@ export default function Holder() {
             {scripts.map((t,i) => {
                 if(!t.showing) return '';
                 return (
+                  <>
                     <div 
                     key={i} 
                     className={styles['tab']}
-                    style={{background: scripts[selected].name !== t.name ? '#225866' : '#282c34'}}
+                    style={{background: scripts[selected].name === t.name ? '#225866' : '#282c34'}}
                     >
                         <div onClick={() => selectTab(t.name)} className={styles['tab-name']}>{t.name}</div>
                         <div onClick={() => deleteTab(t.name, i)} >x</div>
                     </div>
+                    {selected !== i && !previousToSelectedTabOrLastTab(t.name) &&
+                      <div className={styles['divider']}></div>
+                    }
+                  </>
                 )        
             })}
           </div>
@@ -114,13 +134,27 @@ export default function Holder() {
           </div>
         </div>
       </div>
-      <div style={{display: 'flex'}}>
-        <CodeMirror onCodeChange={(newCode) => onCodeChange(newCode)} code={scripts[selected].code} propCodeWidth={width} propCodeHeight={height} />
+      <div style={{display: 'flex', borderTop: '3px solid #002b36'}}>
+        <CodeMirror
+          evaluation={(type) => EvaluateCode(type)}
+          onCodeChange={(newCode) => onCodeChange(newCode)}
+          code={scripts[selected].code}
+          propCodeWidth={width}
+          propCodeHeight={height}
+        />
         <div onMouseDown={e => handleMouseDownW(e)} className={styles['width-dragger']} />
-        <CodeMirror propCodeWidth={window.innerWidth - width} propCodeHeight={height} />
+        <CodeMirror 
+          evaluation={(type) => EvaluateCode(type)}
+          code={scripts[selected].secondCode || ''}
+          propCodeWidth={window.innerWidth - width}
+          propCodeHeight={height}
+        />
       </div>
       <div onMouseDown={e => handleMouseDownH(e)} className={styles['height-dragger']} />
-      <Document addTab={(name) => addTab(name)} propCodeHeight={window.innerHeight - height} />
+      <Document 
+        addTab={(name) => addTab(name)}
+        propCodeHeight={window.innerHeight - height}
+      />
     </div>
   );
 }
