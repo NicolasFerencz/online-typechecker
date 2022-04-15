@@ -20,3 +20,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;  
 }
+
+/* .command {
+  border: 1px solid white;
+  padding: 2px;
+} */
+
+.command:hover {
+  color: grey;
+}

@@ -49,6 +49,7 @@ export default function Code({ propCodeWidth, propCodeHeight, code = '', onCodeC
                 <span 
                   onClick={() => evaluation(o)}
                   style={{cursor:'pointer'}}
+                  className={styles['command']}
                 >
                   {o}
                 </span>

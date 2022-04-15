@@ -40,6 +40,7 @@
   border-radius: 5px; 
   font-size: 12px;
   cursor: pointer;
+  background: red;
 }
 
 .tab-name {
@@ -70,7 +71,15 @@
 .divider {
   width: 0;
   height: 20px;
-  borderLeft: 1px solid grey;
-  alignSelf: center
+  border-left: 1px solid grey;
+  align-self: center;
+}
+
+.green {
+  background: '#225866'
+}
+
+.grey {
+  background: '#282c34'
 }
 
