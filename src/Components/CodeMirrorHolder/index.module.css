@@ -40,7 +40,6 @@
   border-radius: 5px; 
   font-size: 12px;
   cursor: pointer;
-  background: red;
 }
 
 .tab-name {
@@ -73,13 +72,5 @@
   height: 20px;
   border-left: 1px solid grey;
   align-self: center;
-}
-
-.green {
-  background: '#225866'
-}
-
-.grey {
-  background: '#282c34'
 }
 
