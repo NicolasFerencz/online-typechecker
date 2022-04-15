@@ -1,4 +1,4 @@
-import CodeMirror from '../CodeMirror';
+import CodeMirrorWrapper from '../CodeMirrorWrapper';
 import { useState, useCallback, useEffect } from 'react';
 import styles from './index.module.css'
 import Document from '../Document';
@@ -25,7 +25,6 @@ export default function Holder() {
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
-    console.log('useeffect!')
     socket.on('input', (arg) => { console.log('desde el socket: ' + arg); WriteSecondCode(arg) })
   },[])
 
@@ -91,7 +90,11 @@ export default function Holder() {
   }
 
   const onCodeChange = (newCode) => {
-    scripts[selected].code = newCode;
+    // scripts[selected].code = newCode;
+    setScripts(scripts.map((s, i) => {
+      if(i !== selected) return s;
+      return { ...s, code: newCode }
+    }))
   }
 
   const previousToSelectedTabOrLastTab = (name) => {
@@ -107,13 +110,11 @@ export default function Holder() {
     console.log('sc', scripts[selected].secondCode)
     if(!scripts[selected].secondCode) newSecondCode = newCode;
     else newSecondCode = `${scripts[selected].secondCode}${newCode}`
-    setScripts(scripts.map((s, i) => {
-      if(i !== selected) return s;
-      return { ...s, secondCode: newSecondCode }
-    }))
+    scripts[selected].secondCode = newSecondCode;
   }
 
   const EvaluateCode = (type) => {
+    socket.emit('howdy')
     setScripts(scripts.map((s, i) => {
       if(i !== selected) return s;
       if(type === 'Clear') return { ...s, secondCode: ''}
@@ -152,7 +153,7 @@ export default function Holder() {
         </div>
       </div>
       <div style={{display: 'flex', borderTop: '5px solid #002b36'}}>
-        <CodeMirror
+        <CodeMirrorWrapper
           evaluation={(type) => EvaluateCode(type)}
           onCodeChange={(newCode) => onCodeChange(newCode)}
           code={scripts[selected].code}
@@ -160,7 +161,7 @@ export default function Holder() {
           propCodeHeight={height}
         />
         <div onMouseDown={e => handleMouseDownW(e)} className={styles['width-dragger']} />
-        <CodeMirror 
+        <CodeMirrorWrapper
           evaluation={(type) => EvaluateCode(type)}
           code={scripts[selected].secondCode || ''}
           propCodeWidth={window.innerWidth - width}

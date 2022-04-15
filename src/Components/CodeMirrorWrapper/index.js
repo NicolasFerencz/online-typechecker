@@ -32,7 +32,7 @@ export default function Code({ propCodeWidth, propCodeHeight, code = '', onCodeC
             width={`${propCodeWidth}px`}  
             onChange={(value, viewUpdate) => {
               if (viewUpdate.changes.sections.length === 2) return;
-              onCodeChange(value)
+              onCodeChange(value + 'agregado')
             }}
             minWidth={'350px'}
             maxWidth={`${window.innerWidth - 350}px`}

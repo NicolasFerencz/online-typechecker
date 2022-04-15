@@ -11,20 +11,19 @@ const io = new Server(httpServer, {
 });
 
 io.on('connection', socket => {
-  const ls = spawn('echo a && sleep 7 && echo b && sleep 7 && echo c && sleep 7 && echo d', {
-    shell: true
-  });
-  ls.stdout.on('data', (data) => {
-    io.emit('input', data.toString())
-  })
   console.log(`connect ${socket.id}`);
 
   socket.on('disconnect', reason => {
     console.log(`disconnect ${socket.id} due to ${reason}`);
   });
 
-  socket.on('howdy', (arg) => {
-    console.log(arg)
+  socket.on('howdy', () => {
+    const ls = spawn('echo a && sleep 7 && echo b && sleep 7 && echo c && sleep 7 && echo d', {
+      shell: true
+    });
+    ls.stdout.on('data', (data) => {
+      io.emit('input', data.toString())
+    })
   })
 });
 
