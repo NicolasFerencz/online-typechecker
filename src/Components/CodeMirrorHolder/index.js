@@ -116,14 +116,12 @@ export default function Holder() {
                 return (
                   <>
                     <div 
-                    key={i} 
-                    className={[
-                      styles['tab'],
-                      scripts[selected].name === t.name ? styles['green'] : styles['grey']
-                    ]}
+                      key={i} 
+                      className={styles['tab']}
+                      style={{background: scripts[selected].name === t.name ? '#225866' : '#282c34'}}
                     >
-                        <div onClick={() => selectTab(t.name)} className={styles['tab-name']}>{t.name}</div>
-                        <div onClick={() => deleteTab(t.name, i)} >x</div>
+                      <div onClick={() => selectTab(t.name)} className={styles['tab-name']}>{t.name}</div>
+                      <div onClick={() => deleteTab(t.name, i)} >x</div>
                     </div>
                     {selected !== i && !previousToSelectedTabOrLastTab(t.name) &&
                       <div className={styles['divider']}></div>

@@ -20,7 +20,3 @@
   text-overflow: ellipsis;
   white-space: nowrap;  
 }
-
-.command:hover {
-  color: grey;
-}
