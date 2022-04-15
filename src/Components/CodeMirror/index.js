@@ -1,6 +1,5 @@
 import CodeMirror from '@uiw/react-codemirror';
 import { StreamLanguage } from '@codemirror/stream-parser';
-import { useState } from 'react';
 import styles from './index.module.css'
 import { oneDark } from "@codemirror/theme-one-dark";
 import { elixir } from 'codemirror-lang-elixir'
@@ -23,7 +22,6 @@ const theme = EditorView.theme({
 const Options = ['Run', 'Annotate', 'Checktype', 'Log', 'Clear']
 
 export default function Code({ propCodeWidth, propCodeHeight, code = '', onCodeChange, evaluation, withOptions = true }) {
-  const [result, setResult] = useState('')
 
   return (
     <div>
@@ -58,9 +56,6 @@ export default function Code({ propCodeWidth, propCodeHeight, code = '', onCodeC
             )
           })}
         </div>
-        {/* <div className={styles['output']}>
-          Your script says: {result}
-        </div> */}
     </div>
   );
 }
