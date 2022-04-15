@@ -91,7 +91,7 @@ export default function Holder() {
 
   const previousToSelectedTabOrLastTab = (name) => {
     const onlyShowing = scripts.filter(s => s.showing)
-    if(onlyShowing[onlyShowing.length - 1].name === name) return true; // si es la ultima
+    if(onlyShowing[onlyShowing.length - 1].name === name) return true;
     const activeInShowingIndex = onlyShowing.findIndex(s => s.name === scripts[selected].name)
     if(activeInShowingIndex === 0) return false;
     return onlyShowing[activeInShowingIndex - 1].name === name;
@@ -117,8 +117,10 @@ export default function Holder() {
                   <>
                     <div 
                     key={i} 
-                    className={styles['tab']}
-                    style={{background: scripts[selected].name === t.name ? '#225866' : '#282c34'}}
+                    className={[
+                      styles['tab'],
+                      scripts[selected].name === t.name ? styles['green'] : styles['grey']
+                    ]}
                     >
                         <div onClick={() => selectTab(t.name)} className={styles['tab-name']}>{t.name}</div>
                         <div onClick={() => deleteTab(t.name, i)} >x</div>
