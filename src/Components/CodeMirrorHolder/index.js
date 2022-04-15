@@ -3,6 +3,9 @@ import { useState, useCallback, useEffect } from 'react';
 import styles from './index.module.css'
 import Document from '../Document';
 import { scripts as exampleScripts }  from '../../example-scripts';
+import { io } from 'socket.io-client'
+
+const socket = io("ws://localhost:3000")
 
 const minDrawerWidth = 50;
 const maxDrawerWidth = 1000;
@@ -22,7 +25,9 @@ export default function Holder() {
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
-  })
+    console.log('useeffect!')
+    socket.on('input', (arg) => { console.log('desde el socket: ' + arg); WriteSecondCode(arg) })
+  },[])
 
   const handleMouseDownW = (e) => {
     document.addEventListener("mouseup", handleMouseUpW, true);
@@ -95,6 +100,17 @@ export default function Holder() {
     const activeInShowingIndex = onlyShowing.findIndex(s => s.name === scripts[selected].name)
     if(activeInShowingIndex === 0) return false;
     return onlyShowing[activeInShowingIndex - 1].name === name;
+  }
+
+  const WriteSecondCode = (newCode) => {
+    let newSecondCode;
+    console.log('sc', scripts[selected].secondCode)
+    if(!scripts[selected].secondCode) newSecondCode = newCode;
+    else newSecondCode = `${scripts[selected].secondCode}${newCode}`
+    setScripts(scripts.map((s, i) => {
+      if(i !== selected) return s;
+      return { ...s, secondCode: newSecondCode }
+    }))
   }
 
   const EvaluateCode = (type) => {
