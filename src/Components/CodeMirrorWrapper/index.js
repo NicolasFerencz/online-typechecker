@@ -21,19 +21,16 @@ const theme = EditorView.theme({
 
 const Options = ['Run', 'Annotate', 'Checktype', 'Log', 'Clear']
 
-export default function Code({ propCodeWidth, propCodeHeight, code = '', onCodeChange, evaluation, withOptions = true }) {
+export default function Code({ propCodeWidth, propCodeHeight, code = '', withOptions = true, runCommand }) {
 
   return (
     <div>
         <div>
           <CodeMirror
             value={code}
-            height={`${propCodeHeight - 90}px`}
+            height={`${propCodeHeight - 50}px`}
             width={`${propCodeWidth}px`}  
-            onChange={(value, viewUpdate) => {
-              if (viewUpdate.changes.sections.length === 2) return;
-              onCodeChange(value + 'agregado')
-            }}
+            onChange={(value, viewUpdate) => {}}
             minWidth={'350px'}
             maxWidth={`${window.innerWidth - 350}px`}
             theme={[oneDark, basicSetup, StreamLanguage.define(elixir)]}
@@ -46,7 +43,7 @@ export default function Code({ propCodeWidth, propCodeHeight, code = '', onCodeC
               <>
                 <span 
                   key={i} 
-                  onClick={() => evaluation(o)}
+                  onClick={() => runCommand()}
                   style={{cursor:'pointer'}}
                   className={styles['command']}
                 >

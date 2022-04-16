@@ -1,5 +1,5 @@
 import CodeMirrorWrapper from '../CodeMirrorWrapper';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import styles from './index.module.css'
 import Document from '../Document';
 import { scripts as exampleScripts }  from '../../example-scripts';
@@ -13,11 +13,11 @@ const minDrawerHeight = 50;
 const maxDrawerHeight = 1000;
 
 export default function Holder() {
-  const [id, setId] = useState(1)
   const [width, setWidth] = useState(window.innerWidth/2)
   const [height, setHeight] = useState(450)
-  const [scripts, setScripts] = useState(exampleScripts)
-  const [selected, setSelected] = useState(0)
+  const [script, setScript] = useState('')
+  const [secondScript, setSecondScript] = useState('')
+  const secondScriptAux = useRef('')
 
   const handleResize = () => {
     setWidth(window.innerWidth/2)
@@ -25,7 +25,7 @@ export default function Holder() {
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
-    socket.on('input', (arg) => { console.log('desde el socket: ' + arg); WriteSecondCode(arg) })
+    socket.on('input', (arg) => onSecondScript(arg))
   },[])
 
   const handleMouseDownW = (e) => {
@@ -62,108 +62,31 @@ export default function Holder() {
     }
   }, []);
 
-  const deleteTab = (name, index) => {
-    if (selected === index) setSelected(scripts.findIndex(s => s.showing))
-    if(scripts.filter(s => s.showing).length === 1) return 
-    setScripts(scripts.map((s, i) => { 
-      if (s.name !== name) return s
-      return { ...s, showing: false };
-    }))
-    console.log(scripts[selected].showing)
+  const selectScript = (name) => {
+    setScript(exampleScripts.find(s => s.name === name).code)
   }
 
-  const addTab = (name) => {
-    setScripts(scripts.map((s, i) => {
-      if (s.name !== name) return s;
-      setSelected(i)
-      return { ...s, showing: true };
-    }))
-  }
-
-  const selectTab = (name) => {
-    setSelected(scripts.findIndex(s => s.name === name))
-  }
-
-  const addScript = () => {
-    setScripts([...scripts, { name: `Script ${id}`, code: '', showing: true, deletable: false }])
-    setId(id + 1)
-  }
-
-  const onCodeChange = (newCode) => {
-    // scripts[selected].code = newCode;
-    setScripts(scripts.map((s, i) => {
-      if(i !== selected) return s;
-      return { ...s, code: newCode }
-    }))
-  }
-
-  const previousToSelectedTabOrLastTab = (name) => {
-    const onlyShowing = scripts.filter(s => s.showing)
-    if(onlyShowing[onlyShowing.length - 1].name === name) return true;
-    const activeInShowingIndex = onlyShowing.findIndex(s => s.name === scripts[selected].name)
-    if(activeInShowingIndex === 0) return false;
-    return onlyShowing[activeInShowingIndex - 1].name === name;
-  }
-
-  const WriteSecondCode = (newCode) => {
-    let newSecondCode;
-    console.log('sc', scripts[selected].secondCode)
-    if(!scripts[selected].secondCode) newSecondCode = newCode;
-    else newSecondCode = `${scripts[selected].secondCode}${newCode}`
-    scripts[selected].secondCode = newSecondCode;
-  }
-
-  const EvaluateCode = (type) => {
+  const runCommand = () => {
     socket.emit('howdy')
-    setScripts(scripts.map((s, i) => {
-      if(i !== selected) return s;
-      if(type === 'Clear') return { ...s, secondCode: ''}
-      return { ...s, secondCode: 'Executed ' + type + ' for ' + s.name}
-    }))
   }
-  
+
+  const onSecondScript = (arg) => {
+    secondScriptAux.current = secondScriptAux.current + arg
+    setSecondScript(secondScriptAux.current)
+  }
+
   return (
     <div>
-      <div className={styles['tabs-bar']} />
-      <div style={{display: 'flex'}}>
-        <div className={styles['tabs-wrapper']}>
-          <div className={styles['tabs-container']} style={{width: `${window.innerWidth - 30}px`}}>
-            {scripts.map((t,i) => {
-                if(!t.showing) return '';
-                return (
-                  <>
-                    <div 
-                      key={i} 
-                      className={styles['tab']}
-                      style={{background: scripts[selected].name === t.name ? '#225866' : '#282c34'}}
-                    >
-                      <div onClick={() => selectTab(t.name)} className={styles['tab-name']}>{t.name}</div>
-                      <div onClick={() => deleteTab(t.name, i)} >x</div>
-                    </div>
-                    {selected !== i && !previousToSelectedTabOrLastTab(t.name) &&
-                      <div className={styles['divider']}></div>
-                    }
-                  </>
-                )        
-            })}
-          </div>
-          <div className={styles['add-tab']} onClick={() => addScript()}> 
-            +
-          </div>
-        </div>
-      </div>
       <div style={{display: 'flex', borderTop: '5px solid #002b36'}}>
         <CodeMirrorWrapper
-          evaluation={(type) => EvaluateCode(type)}
-          onCodeChange={(newCode) => onCodeChange(newCode)}
-          code={scripts[selected].code}
+          code={script}
           propCodeWidth={width}
           propCodeHeight={height}
+          runCommand={() => runCommand()}
         />
         <div onMouseDown={e => handleMouseDownW(e)} className={styles['width-dragger']} />
         <CodeMirrorWrapper
-          evaluation={(type) => EvaluateCode(type)}
-          code={scripts[selected].secondCode || ''}
+          code={secondScript}
           propCodeWidth={window.innerWidth - width}
           propCodeHeight={height}
           withOptions={false}
@@ -171,7 +94,7 @@ export default function Holder() {
       </div>
       <div onMouseDown={e => handleMouseDownH(e)} className={styles['height-dragger']} />
       <Document 
-        addTab={(name) => addTab(name)}
+        addTab={(name) => selectScript(name)}
         propCodeHeight={window.innerHeight - height}
       />
     </div>
