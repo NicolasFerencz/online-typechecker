@@ -5,7 +5,7 @@ import Document from '../Document';
 import { scripts as exampleScripts }  from '../../example-scripts';
 import { io } from 'socket.io-client'
 
-const socket = io("ws://localhost:3000")
+const socket = io("ws://localhost:3001")
 
 const minDrawerWidth = 50;
 const maxDrawerWidth = 1000;
@@ -17,6 +17,7 @@ export default function Holder() {
   const [height, setHeight] = useState(450)
   const [script, setScript] = useState('')
   const [secondScript, setSecondScript] = useState('')
+  const [locked, setLocked] = useState(false)
   const secondScriptAux = useRef('')
 
   const handleResize = () => {
@@ -26,6 +27,8 @@ export default function Holder() {
   useEffect(() => {
     window.addEventListener('resize', handleResize);
     socket.on('input', (arg) => onSecondScript(arg))
+    socket.on('lock', () => setLocked(true))
+    socket.on('unlock', () => setLocked(false))
   },[])
 
   const handleMouseDownW = (e) => {
@@ -66,8 +69,10 @@ export default function Holder() {
     setScript(exampleScripts.find(s => s.name === name).code)
   }
 
-  const runCommand = () => {
-    socket.emit('howdy')
+  const runCommand = (type) => {
+    secondScriptAux.current = ''
+    setSecondScript('')
+    if(type !== 'clear') socket.emit(type)
   }
 
   const onSecondScript = (arg) => {
@@ -82,7 +87,8 @@ export default function Holder() {
           code={script}
           propCodeWidth={width}
           propCodeHeight={height}
-          runCommand={() => runCommand()}
+          runCommand={(o) => runCommand(o)}
+          locked={locked}
         />
         <div onMouseDown={e => handleMouseDownW(e)} className={styles['width-dragger']} />
         <CodeMirrorWrapper
@@ -90,6 +96,7 @@ export default function Holder() {
           propCodeWidth={window.innerWidth - width}
           propCodeHeight={height}
           withOptions={false}
+          locked={true}
         />
       </div>
       <div onMouseDown={e => handleMouseDownH(e)} className={styles['height-dragger']} />

@@ -19,9 +19,9 @@ const theme = EditorView.theme({
   },
 });
 
-const Options = ['Run', 'Annotate', 'Checktype', 'Log', 'Clear']
+const Options = ['Run', 'Annotate', 'Typecheck', 'Log', 'Clear']
 
-export default function Code({ propCodeWidth, propCodeHeight, code = '', withOptions = true, runCommand }) {
+export default function Code({ propCodeWidth, propCodeHeight, code = '', withOptions = true, runCommand, locked }) {
 
   return (
     <div>
@@ -35,16 +35,17 @@ export default function Code({ propCodeWidth, propCodeHeight, code = '', withOpt
             maxWidth={`${window.innerWidth - 350}px`}
             theme={[oneDark, basicSetup, StreamLanguage.define(elixir)]}
             extensions={theme}
+            editable={!locked}
           />
         </div>
-        <div className={styles['commands']}>
+        <div className={styles['commands']} style={{cursor: locked ? 'wait' : ''}}>
           {withOptions && Options.map((o, i) => {
             return (
               <>
                 <span 
                   key={i} 
-                  onClick={() => runCommand()}
-                  style={{cursor:'pointer'}}
+                  onClick={() => { if(!locked) runCommand(o.toLowerCase()) }}
+                  style={{cursor: locked ? 'wait' : 'pointer' }}
                   className={styles['command']}
                 >
                   {o}
