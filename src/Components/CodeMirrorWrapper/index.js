@@ -21,7 +21,7 @@ const theme = EditorView.theme({
 
 const Options = ['Run', 'Annotate', 'Typecheck', 'Log', 'Clear']
 
-export default function Code({ propCodeWidth, propCodeHeight, code = '', withOptions = true, runCommand, locked }) {
+export default function CodeMirrorWrapper({ propCodeWidth, propCodeHeight, code = '', withOptions = true, runCommand, locked }) {
 
   return (
     <div>
@@ -41,9 +41,8 @@ export default function Code({ propCodeWidth, propCodeHeight, code = '', withOpt
         <div className={styles['commands']} style={{cursor: locked ? 'wait' : ''}}>
           {withOptions && Options.map((o, i) => {
             return (
-              <>
+              <div key={i} >
                 <span 
-                  key={i} 
                   onClick={() => { if(!locked) runCommand(o.toLowerCase()) }}
                   style={{cursor: locked ? 'wait' : 'pointer' }}
                   className={styles['command']}
@@ -51,7 +50,7 @@ export default function Code({ propCodeWidth, propCodeHeight, code = '', withOpt
                   {o}
                 </span>
                 {i !== Options.length - 1 && <span>|</span>}
-              </>
+              </div>
             )
           })}
         </div>

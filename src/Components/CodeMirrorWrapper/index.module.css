@@ -14,9 +14,13 @@
   padding-left: 10px;
   background: #225866;
   color: white;
-  gap: 10px;
+  gap: 8px;
   display: flex;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;  
+}
+
+.command {
+  margin-right: 8px;
 }

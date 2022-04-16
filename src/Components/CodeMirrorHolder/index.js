@@ -26,9 +26,18 @@ export default function Holder() {
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
-    socket.on('input', (arg) => onSecondScript(arg))
     socket.on('lock', () => setLocked(true))
     socket.on('unlock', () => setLocked(false))
+    if(!socket.listeners('input').length) {
+      socket.on('input', (arg) => onSecondScript(arg))
+    }
+
+    return (() => {
+      window.removeEventListener('resize', handleResize)
+      socket.removeListener('input', (arg) => () => onSecondScript(arg) )
+      socket.removeListener('lock', () => setLocked(true))
+      socket.removeListener('unlock', () => setLocked(false))
+    })
   },[])
 
   const handleMouseDownW = (e) => {

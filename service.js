@@ -34,6 +34,7 @@ io.on('connection', socket => {
         shell: true
       });
       command.stdout.on('data', (data) => {
+        console.log('emitting', data)
         io.emit('input', data.toString())
       })
       command.stdout.on('close', () => {
@@ -42,5 +43,9 @@ io.on('connection', socket => {
     })
   })
 });
+
+io.on('disconnect', () => {
+  console.log('bye')
+})
 
 io.listen(3001)
