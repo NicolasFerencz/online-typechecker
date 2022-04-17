@@ -16,16 +16,26 @@ const io = new Server(httpServer, {
   }
 });
 
+const removeANSIColors = (str) => {
+  return str.replace(
+    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+}
+
 const events = [
   {
-    name: 'typecheck',
+    name: 'typecheck static',
     command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check --static ${filename}`,
+    showLog: true
+  },
+  {
+    name: 'typecheck',
+    command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check ${filename}`,
     showLog: true
   },
   {
     name: 'annotate types',
     command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check --annotate types ${filename}`,
-    fileSubfix: '_casts.ex',
+    fileSubfix: '_types.ex',
     showLog: false
   },
   {
@@ -47,11 +57,11 @@ io.on('connection', socket => {
         fs.writeFileSync(path, arg, () => {})
         const command = spawn(ev.command(filename), { shell: true });
         command.stderr.on('data', (data) => {
-          socket.emit('input', data.toString())
+          socket.emit('input', removeANSIColors(data.toString()))
         })
         command.stdout.on('data', (data) => {
           if(ev.showLog) {
-            socket.emit('input', data.toString())
+            socket.emit('input', removeANSIColors(data.toString()))
           }
         })
         command.stdout.on('close', () => {
