@@ -20,7 +20,7 @@ const theme = EditorView.theme({
   },
 });
 
-const Options = ['Run', 'Annotate', 'Typecheck', 'Log', 'Clear']
+const Options = ['Typecheck', 'Annotate types', 'Annotate casts']
 
 export default function CodeMirrorWrapper({ propCodeWidth, propCodeHeight, code = '', withOptions = true, runCommand, locked }) {
   

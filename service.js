@@ -18,39 +18,60 @@ const io = new Server(httpServer, {
 
 const events = [
   {
-    name: 'run',
-    command: (filename) => 'echo run && sleep 2 && echo runb && sleep 2 && echo runc && sleep 2 && echo rund'
-  },
-  {
     name: 'typecheck',
-    command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check --static ${filename}`
+    command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check --static ${filename}`,
+    showLog: true
   },
   {
-    name: 'annotate',
-    command: (filename) => 'echo annotate && sleep 2 && echo annotateb && sleep 2 && echo annotatec && sleep 2 && echo annotated'
+    name: 'annotate types',
+    command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check --annotate types ${filename}`,
+    fileSubfix: '_casts.ex',
+    showLog: false
+  },
+  {
+    name: 'annotate casts',
+    command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check --annotate casts ${filename}`,
+    fileSubfix: '_casts.ex',
+    showLog: false
   }
 ]
 
 io.on('connection', socket => {
   events.forEach((ev) => {
-    socket.on(ev.name, (arg) => {
-      socket.emit('lock')
-      const uuid = uuidv4()
-      const filename = `${ev.name}-${uuid}.ex`
-      const path = `${local_dir}/${filename}`
-      fs.writeFileSync(path, arg, () => {})
-      const command = spawn(ev.command(filename), { shell: true });
-      command.stderr.on('data', (data) => {
-        io.emit('input', data.toString())
+    try {  
+      socket.on(ev.name, (arg) => {
+        socket.emit('lock')
+        const uuid = uuidv4()
+        const filename = `${uuid}.ex`
+        const path = `${local_dir}/${filename}`
+        fs.writeFileSync(path, arg, () => {})
+        const command = spawn(ev.command(filename), { shell: true });
+        command.stderr.on('data', (data) => {
+          socket.emit('input', data.toString())
+        })
+        command.stdout.on('data', (data) => {
+          if(ev.showLog) {
+            socket.emit('input', data.toString())
+          }
+        })
+        command.stdout.on('close', () => {
+          fs.unlink(path, () => {})
+          if(ev.fileSubfix) {
+            const auxFile = `${local_dir}/${uuid}${ev.fileSubfix}`
+            if (fs.existsSync(auxFile)) {
+              const content = fs.readFileSync(auxFile, {encoding:'utf8', flag:'r'});
+              socket.emit('input', content)
+              fs.unlink(auxFile, () => {})
+            }
+          }
+          socket.emit('unlock')
+        })
       })
-      command.stdout.on('data', (data) => {
-        io.emit('input', data.toString())
-      })
-      command.stdout.on('close', () => {
-        fs.unlink(path, () => {})
-        socket.emit('unlock')
-      })
-    })
+    }
+    catch (err) {
+      io.emit('input', err)
+      socket.emit('unlock')
+    }
   })
 });
 
