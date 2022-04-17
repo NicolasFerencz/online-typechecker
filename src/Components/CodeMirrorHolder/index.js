@@ -78,10 +78,10 @@ export default function Holder() {
     setScript(exampleScripts.find(s => s.name === name).code)
   }
 
-  const runCommand = (type) => {
+  const runCommand = (type, code) => {
     secondScriptAux.current = ''
     setSecondScript('')
-    if(type !== 'clear') socket.emit(type)
+    if(type !== 'clear') socket.emit(type, code)
   }
 
   const onSecondScript = (arg) => {
@@ -96,7 +96,7 @@ export default function Holder() {
           code={script}
           propCodeWidth={width}
           propCodeHeight={height}
-          runCommand={(o) => runCommand(o)}
+          runCommand={(o, code) => runCommand(o, code)}
           locked={locked}
         />
         <div onMouseDown={e => handleMouseDownW(e)} className={styles['width-dragger']} />

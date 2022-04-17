@@ -5,6 +5,7 @@ import { oneDark } from "@codemirror/theme-one-dark";
 import { elixir } from 'codemirror-lang-elixir'
 import { basicSetup } from '@codemirror/basic-setup'
 import { EditorView } from '@codemirror/view';
+import { useState } from 'react';
 
 const theme = EditorView.theme({
   "&.cm-editor": {
@@ -22,6 +23,8 @@ const theme = EditorView.theme({
 const Options = ['Run', 'Annotate', 'Typecheck', 'Log', 'Clear']
 
 export default function CodeMirrorWrapper({ propCodeWidth, propCodeHeight, code = '', withOptions = true, runCommand, locked }) {
+  
+  const [script, setScript] = useState(code)
 
   return (
     <div>
@@ -30,7 +33,7 @@ export default function CodeMirrorWrapper({ propCodeWidth, propCodeHeight, code 
             value={code}
             height={`${propCodeHeight - 50}px`}
             width={`${propCodeWidth}px`}  
-            onChange={(value, viewUpdate) => {}}
+            onChange={(value) => setScript(value)}
             minWidth={'350px'}
             maxWidth={`${window.innerWidth - 350}px`}
             theme={[oneDark, basicSetup, StreamLanguage.define(elixir)]}
@@ -43,7 +46,7 @@ export default function CodeMirrorWrapper({ propCodeWidth, propCodeHeight, code 
             return (
               <div key={i} >
                 <span 
-                  onClick={() => { if(!locked) runCommand(o.toLowerCase()) }}
+                  onClick={() => { if(!locked) runCommand(o.toLowerCase(), script) }}
                   style={{cursor: locked ? 'wait' : 'pointer' }}
                   className={styles['command']}
                 >
