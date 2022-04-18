@@ -22,9 +22,14 @@ const theme = EditorView.theme({
 
 const Options = ['Typecheck', 'Typecheck static', 'Annotate types', 'Annotate casts']
 
-export default function CodeMirrorWrapper({ propCodeWidth, propCodeHeight, code = '', withOptions = true, runCommand, locked }) {
+export default function CodeMirrorWrapper({ propCodeWidth, propCodeHeight, code = '', withOptions = true, runCommand, locked, isElixir }) {
   
   const [script, setScript] = useState(code)
+  let themes = [oneDark]
+  if(isElixir) {
+    themes.push(StreamLanguage.define(elixir))
+    themes.push(basicSetup)
+  }
 
   return (
     <div>
@@ -36,7 +41,7 @@ export default function CodeMirrorWrapper({ propCodeWidth, propCodeHeight, code 
             onChange={(value) => setScript(value)}
             minWidth={'350px'}
             maxWidth={`${window.innerWidth - 350}px`}
-            theme={[oneDark, basicSetup, StreamLanguage.define(elixir)]}
+            theme={themes}
             extensions={theme}
             editable={!locked}
           />

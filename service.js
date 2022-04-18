@@ -24,25 +24,21 @@ const removeANSIColors = (str) => {
 const events = [
   {
     name: 'typecheck static',
-    command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check --static ${filename}`,
-    showLog: true
+    command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check --static ${filename}`
   },
   {
     name: 'typecheck',
-    command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check ${filename}`,
-    showLog: true
+    command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check ${filename}`
   },
   {
     name: 'annotate types',
     command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check --annotate types ${filename}`,
-    fileSubfix: '_types.ex',
-    showLog: false
+    fileSubfix: '_types.ex'
   },
   {
     name: 'annotate casts',
     command: (filename) => `cd ${process.env.ELIXIR_DIR} && poetry run gradualelixir type_check --annotate casts ${filename}`,
-    fileSubfix: '_casts.ex',
-    showLog: false
+    fileSubfix: '_casts.ex'
   }
 ]
 
@@ -57,11 +53,17 @@ io.on('connection', socket => {
         fs.writeFileSync(path, arg, () => {})
         const command = spawn(ev.command(filename), { shell: true });
         command.stderr.on('data', (data) => {
-          socket.emit('input', removeANSIColors(data.toString()))
+          socket.emit('input', {
+            code: removeANSIColors(data.toString()),
+            isElixir: false
+          })
         })
         command.stdout.on('data', (data) => {
-          if(ev.showLog) {
-            socket.emit('input', removeANSIColors(data.toString()))
+          if(!fs.existsSync(`${local_dir}/${uuid}${ev.fileSubfix}`)) {
+            socket.emit('input', {
+              code: removeANSIColors(data.toString()),
+              isElixir: false
+            })
           }
         })
         command.stdout.on('close', () => {
@@ -70,7 +72,10 @@ io.on('connection', socket => {
             const auxFile = `${local_dir}/${uuid}${ev.fileSubfix}`
             if (fs.existsSync(auxFile)) {
               const content = fs.readFileSync(auxFile, {encoding:'utf8', flag:'r'});
-              socket.emit('input', content)
+              socket.emit('input', {
+                code: content,
+                isElixir: true
+              })
               fs.unlink(auxFile, () => {})
             }
           }

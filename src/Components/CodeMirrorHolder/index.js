@@ -18,6 +18,7 @@ export default function Holder() {
   const [script, setScript] = useState('')
   const [secondScript, setSecondScript] = useState('')
   const [locked, setLocked] = useState(false)
+  const [isElixir, setIsElixir] = useState(false)
   const secondScriptAux = useRef('')
 
   const handleResize = () => {
@@ -84,9 +85,10 @@ export default function Holder() {
     if(type !== 'clear') socket.emit(type, code)
   }
 
-  const onSecondScript = (arg) => {
-    secondScriptAux.current = secondScriptAux.current + arg
+  const onSecondScript = ({ code, isElixir }) => {
+    secondScriptAux.current = secondScriptAux.current + code
     setSecondScript(secondScriptAux.current)
+    setIsElixir(isElixir)
   }
 
   return (
@@ -98,6 +100,7 @@ export default function Holder() {
           propCodeHeight={height}
           runCommand={(o, code) => runCommand(o, code)}
           locked={locked}
+          isElixir={true}
         />
         <div onMouseDown={e => handleMouseDownW(e)} className={styles['width-dragger']} />
         <CodeMirrorWrapper
@@ -106,6 +109,7 @@ export default function Holder() {
           propCodeHeight={height}
           withOptions={false}
           locked={true}
+          isElixir={isElixir}
         />
       </div>
       <div onMouseDown={e => handleMouseDownH(e)} className={styles['height-dragger']} />
