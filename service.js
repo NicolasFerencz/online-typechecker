@@ -5,9 +5,15 @@ const httpServer = createServer();
 const fs = require('fs')
 const { v4: uuidv4 } = require('uuid');
 const dotenv = require('dotenv');
+var path = require('path');
+const local_dir = './resources/temp'
 dotenv.config();
 
-const local_dir = './resources/temp'
+spawn(
+  `cd ${process.env.ELIXIR_DIR} && 
+  poetry run gradualelixir configure --working-dir ${path.resolve(__dirname)}/resources/temp`, 
+  { shell: true }
+);
 
 const io = new Server(httpServer, {
   cors: {
@@ -18,7 +24,9 @@ const io = new Server(httpServer, {
 
 const removeANSIColors = (str) => {
   return str.replace(
-    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+    ''
+  );
 }
 
 const events = [

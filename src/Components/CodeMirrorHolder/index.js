@@ -3,9 +3,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import styles from './index.module.css'
 import Document from '../Document';
 import { scripts as exampleScripts }  from '../../example-scripts';
-import { io } from 'socket.io-client'
-
-const socket = io("ws://localhost:3001")
+import { socket } from '../../Services/client';
 
 const minDrawerWidth = 50;
 const maxDrawerWidth = 1000;
