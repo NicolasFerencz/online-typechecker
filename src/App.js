@@ -1,9 +1,9 @@
-import CodeMirrorHolder from './Components/CodeMirrorHolder'
+import React from 'react';
+import CodeMirrorHolder from './Components/CodeMirrorHolder';
 
 export default function App() {
-
   return (
-    <div style={{display:'flex', margin: 0}}>
+    <div style={{ display: 'flex', margin: 0 }}>
       <CodeMirrorHolder />
     </div>
   );

@@ -1,6 +1,6 @@
-export const scripts = [
+export default [
   {
-    name: "demo_fun.ex",
+    name: 'demo_fun.ex',
     code: `defmodule Demo do
 @spec list_length([any]) :: integer
 
@@ -64,10 +64,10 @@ def main(options) do
 end
 end   
     `,
-    showing: true
+    showing: true,
   },
   {
-    name: "demo_cast.ex",
+    name: 'demo_cast.ex',
     code: `defmodule Demo do
 @spec foo_cond(integer, any, any) :: integer
 
@@ -82,10 +82,10 @@ end
 [x, {y, z}] | {integer, any}  ~> {integer, float}
 {x | integer ~> integer, {y, z}| {integer, any}  ~> {integer, float}}
   `,
-    showing: true
+    showing: true,
   },
   {
-    name: "demo_static.ex",
+    name: 'demo_static.ex',
     code: `defmodule Demo do
   @spec foo_number_ops(integer, float, number) :: {}
 
@@ -110,10 +110,10 @@ end
     end
   end
 end`,
-    showing: false
+    showing: false,
   },
   {
-    name: "demo_pattern.ex",
+    name: 'demo_pattern.ex',
     code: `defmodule Demo do
 @spec foo() :: {}
 
@@ -137,10 +137,10 @@ def any_value() do
   {}
 end
 end`,
-    showing: true
+    showing: true,
   },
   {
-    name: "demo_functional.ex",
+    name: 'demo_functional.ex',
     code: `defmodule Demo do
 @spec list_length([any]) :: integer
 
@@ -203,6 +203,6 @@ def main(options) do
   filter_positive(l)
 end
 end`,
-    showing: true
-  }
-]
+    showing: true,
+  },
+];
