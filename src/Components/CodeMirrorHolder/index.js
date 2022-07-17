@@ -16,9 +16,9 @@ export default function Holder() {
   const [isElixir, setIsElixir] = useState(false);
   const secondScriptAux = useRef('');
 
-  const handleResize = () => {
+  const handleResize = useCallback(() => {
     setWidth(window.innerWidth / 2);
-  };
+  }, []);
 
   const onSecondScript = ({ code, isElixirCode }) => {
     secondScriptAux.current += code;
@@ -42,34 +42,25 @@ export default function Holder() {
     });
   }, []);
 
-  const handleMouseMoveH = useCallback((e) => {
-    const newHeight = e.clientY - document.body.offsetTop;
-    setHeight(newHeight);
-  }, []);
-
-  const handleMouseMoveW = useCallback((e) => {
-    const newWidth = e.clientX - document.body.offsetLeft;
-    setWidth(newWidth);
-  }, []);
-
-  const handleMouseUpH = () => {
-    document.removeEventListener('mouseup', handleMouseUpH, true);
-    document.removeEventListener('mousemove', handleMouseMoveH, true);
+  const handleMouseMove = (type) => (e) => {
+    const isWidth = type === 'width';
+    const offset = isWidth ? 'offsetLeft' : 'offsetTop';
+    const client = isWidth ? 'clientX' : 'clientY';
+    const set = isWidth ? setWidth : setHeight;
+    const newSize = e[client] - document.body[offset];
+    set(newSize);
   };
 
-  const handleMouseDownH = () => {
-    document.addEventListener('mouseup', handleMouseUpH, true);
-    document.addEventListener('mousemove', handleMouseMoveH, true);
+  const handleMouseUp = (mouseMove) => () => {
+    document.removeEventListener('mouseup', handleMouseUp, true);
+    document.removeEventListener('mousemove', mouseMove, true);
   };
 
-  const handleMouseUpW = () => {
-    document.removeEventListener('mouseup', handleMouseUpW, true);
-    document.removeEventListener('mousemove', handleMouseMoveW, true);
-  };
-
-  const handleMouseDownW = () => {
-    document.addEventListener('mouseup', handleMouseUpW, true);
-    document.addEventListener('mousemove', handleMouseMoveW, true);
+  const handleMouseDown = (type) => () => {
+    const mouseMove = handleMouseMove(type);
+    const mouseUp = handleMouseUp(mouseMove);
+    document.addEventListener('mouseup', mouseUp, true);
+    document.addEventListener('mousemove', mouseMove, true);
   };
 
   const selectScript = (name) => {
@@ -93,7 +84,7 @@ export default function Holder() {
           locked={locked}
           isElixir
         />
-        <div onMouseDown={(e) => handleMouseDownW(e)} className={styles['width-dragger']} />
+        <div onMouseDown={handleMouseDown('width')} className={styles['width-dragger']} />
         <CodeMirrorWrapper
           code={secondScript}
           propCodeWidth={window.innerWidth - width}
@@ -103,7 +94,7 @@ export default function Holder() {
           isElixir={isElixir}
         />
       </div>
-      <div onMouseDown={(e) => handleMouseDownH(e)} className={styles['height-dragger']} />
+      <div onMouseDown={handleMouseDown('height')} className={styles['height-dragger']} />
       <Document
         addTab={(name) => selectScript(name)}
         propCodeHeight={window.innerHeight - height}
