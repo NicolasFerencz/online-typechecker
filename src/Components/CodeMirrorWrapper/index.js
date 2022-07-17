@@ -47,12 +47,12 @@ export default function CodeMirrorWrapper({
           editable={!locked}
         />
       </div>
-      <div className={styles.commands} style={{ cursor: locked ? 'wait' : '' }}>
+      <div className={styles.commands} style={{ cursor: locked && withOptions ? 'wait' : '' }}>
         {withOptions && Options.map((o, i) => (
           <div key={i}>
             <span
               onClick={() => { if (!locked) runCommand(o.toLowerCase(), script); }}
-              style={{ cursor: locked ? 'wait' : 'pointer' }}
+              style={{ cursor: locked && withOptions ? 'wait' : 'pointer' }}
               className={styles.command}
             >
               {o}
